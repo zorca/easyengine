@@ -56,10 +56,9 @@ function ee_lib_git()
 }
 
 # Update EasyEngine (ee)
-# EasyEngine version: 1.0.0
 # EasyEngine (ee) version: 2.0.0
 EE_CURRENT_VERSION=$(ee version | sed 's/(ee) //' | awk '{print $3}')
-EE_LATEST_VERSION=$(curl -sL https://api.github.com/repos/rtCamp/easyengine/releases | grep tag_name | awk '{print($2)}' | cut -d'"' -f2 | cut -c2-  | head -n1)
+EE_LATEST_VERSION="2.2.3"
 echo EE_CURRENT_VERSION = $EE_CURRENT_VERSION EE_LATEST_VERSION = $EE_LATEST_VERSION &>> $EE_UPDATE_LOG
 
 if [[ $EE_CURRENT_VERSION < $EE_LATEST_VERSION ]]; then
@@ -99,7 +98,7 @@ if [[ $EE_CURRENT_VERSION < $EE_LATEST_VERSION ]]; then
 
 		# Let's clone EasyEngine (ee)
 		ee_lib_echo "Cloning EasyEngine (ee) stable branch, please wait..." | tee -ai $EE_UPDATE_LOG
-		git clone -b stable https://github.com/rtCamp/easyengine.git /tmp/easyengine &>> $EE_UPDATE_LOG \
+		git clone -b old-stable https://github.com/rtCamp/easyengine.git /tmp/easyengine &>> $EE_UPDATE_LOG \
 		|| ee_lib_error "Unable to clone EasyEngine (ee) stable branch, exit status = " $?
 
 		# Setup EasyEngine (ee)
