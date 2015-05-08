@@ -48,7 +48,7 @@ script:
   - sudo ee site create site4.org --wpfc --wp
   - sudo ee site create site5.com --wpsubdir
   - sudo ee site create site5.net --wpsubdir
-  - sudo ee site create site6.net --php --mysql
+  - sudo ee site create sitetest.net --php --mysql
 
   - sudo ee site create site6.com --wpsubdir --wpsc
   - sudo ee site create site6.net --wpsc --wpsubdir
