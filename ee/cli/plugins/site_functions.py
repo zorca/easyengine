@@ -804,15 +804,15 @@ def detSitePar(opts):
         elif 'wpsubdir' in typelist:
             typelist = 'wpsubdir'
         elif 'wpsubdomain' in typelist:
-            typelist = 'wpsubdomain'
+            typelist = ['wpsubdomain']
         elif 'wp' in typelist:
-            typelist = 'wp'
+            typelist = ['wp']
         elif 'mysql' in typelist:
-            typelist = 'mysql'
+            typelist = ['mysql']
         elif 'php' in typelist:
-            typelist = 'php'
+            typelist = ['php']
         else:
-            typelist = 'html'
+            typelist = ['html']
 
     if len(typelist) > 1 or len(cachelist) > 1:
         raise RuntimeError("could not determine site and cache type")
@@ -824,10 +824,10 @@ def detSitePar(opts):
             sitetype = 'wp'
             cachetype = cachelist[0]
         elif typelist and (not cachelist):
-            sitetype = typelist
+            sitetype = typelist[0]
             cachetype = 'basic'
         else:
-            sitetype = typelist
+            sitetype = typelist[0]
             cachetype = cachelist
     return (sitetype, cachetype)
 
