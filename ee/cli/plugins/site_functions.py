@@ -799,7 +799,7 @@ def detSitePar(opts):
 
     # If user enters mmore than one site type decide one with highrest priority
     if len(typelist) > 1:
-        if set(['wpsubdir', 'wpsubdomain']).issubset(set[typelist]):
+        if set(['wpsubdir', 'wpsubdomain']).issubset(set(typelist)):
             raise RuntimeError("could not determine site and cache type")
         elif 'wpsubdir' in typelist:
             typelist = ['wpsubdir']
