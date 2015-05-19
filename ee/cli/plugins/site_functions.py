@@ -830,6 +830,7 @@ def detSitePar(opts):
             if (cachelist[0] in ['wpfc', 'w3tc', 'wpsc']
                and typelist[0] in ['html', 'php', 'mysql']):
                 sitetype = 'wp'
+                cachetype = cachelist[0]
             else:
                 sitetype = typelist[0]
                 cachetype = cachelist[0]
