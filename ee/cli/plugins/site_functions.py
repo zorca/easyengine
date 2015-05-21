@@ -530,6 +530,9 @@ def sitebackup(self, data):
     #     ee_db_name = (EEFileUtils.grep(self, configfiles[0],
     #                   'DB_NAME').split(',')[1]
     #                   .split(')')[0].strip().replace('\'', ''))
+
+    # skip backup database if its non wp site or database flag is marked as deleted
+    Log.debug(self, "skipping database backup...")
     if data['ee_db_name'] and data['ee_db_name'] != 'deleted':
         Log.info(self, 'Backing up database \t\t', end='')
         try:
