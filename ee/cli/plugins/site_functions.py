@@ -530,7 +530,7 @@ def sitebackup(self, data):
     #     ee_db_name = (EEFileUtils.grep(self, configfiles[0],
     #                   'DB_NAME').split(',')[1]
     #                   .split(')')[0].strip().replace('\'', ''))
-    if data['ee_db_name']:
+    if data['ee_db_name'] and data['ee_db_name'] != 'deleted':
         Log.info(self, 'Backing up database \t\t', end='')
         try:
             if not EEShellExec.cmd_exec(self, "mysqldump {0} > {1}/{0}.sql"
