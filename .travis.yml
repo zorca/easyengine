@@ -115,6 +115,7 @@ script:
   - sudo ee site delete site12.org --no-prompt
   - sudo ee site delete site9.com --no-prompt
 
+  - sudo pear install Mail_Mime Net_SMTP Mail_mimeDecode Net_IDNA2-beta Auth_SASL Net_Sieve Crypt_GPG
   - sudo ee stack install --mail
   - sudo ls /var/www/
   - sudo wp --allow-root --info
