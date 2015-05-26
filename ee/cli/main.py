@@ -62,7 +62,7 @@ class EEApp(foundation.CementApp):
         # default output handler
         output_handler = EEOutputHandler
 
-        arg_handler = EEArgHandler
+        argument_handler = EEArgHandler
 
         debug = TOGGLE_DEBUG
 
