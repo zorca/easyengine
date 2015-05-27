@@ -51,7 +51,7 @@ class EEMysqlStack(EEStack):
                       .format(EEVariables.ee_mysql_repo))
             EERepo.add_key(self, '0xcbcb082a1bb943db',
                            keyserver="keyserver.ubuntu.com")
-            EEAptGet.update(self)
+        EEAptGet.update(self)
 
     def _pre_install_stack(self):
         """

@@ -5,6 +5,8 @@ from ee.core.aptget import EEAptGet
 from ee.core.apt_repo import EERepo
 from ee.cli.plugins.eestack import EEStack
 from ee.core.shellexec import EEShellExec
+from ee.core.services import EEService
+from ee.core.git import EEGit
 from ee.core.shellexec import CommandExecutionError
 from ee.cli.main import app
 
@@ -57,7 +59,9 @@ class EEPostfixStack(EEStack):
         """
         Defines activities done after installing hhvm stack
         """
-        pass
+        EEGit.add(self, ["/etc/postfix"],
+                  msg="Adding Postfix into Git")
+        EEService.reload_service(self, 'postfix')
 
     def install_stack(self):
         """
