@@ -78,7 +78,10 @@ class EEStackController(CementBaseController):
     @expose(hide=True)
     def default(self):
         """default action of ee stack command"""
+        from ee.cli.plugins.mailstack import EEMailStack
+        EEMailStack(self).install_stack()
         self.app.args.print_help()
+        EEMailStack(self).purged_stack()
 
     @expose(hide=True)
     def pre_pref(self, apt_packages):
@@ -475,7 +478,7 @@ class EEStackController(CementBaseController):
                                              .format(EEVariables.ee_webroot))
 
                     except CommandExecutionError as e:
-                        Log.error(self, "Failed to generate SSL for 22222")
+                        self.log.error(self, "Failed to generate SSL for 22222")
 
                     # Nginx Configation into GIT
                     EEGit.add(self,

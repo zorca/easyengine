@@ -1,6 +1,6 @@
 """EasyEnging stack Interface"""
 
-
+from ee.core.aptget import EEAptGet
 
 
 class EEStack(object):
@@ -10,27 +10,40 @@ class EEStack(object):
 
     def __init__(self, package_name):
         """
-            package_name: specify the name of package the operation 
+            packages_name: specify the name of package the operation 
                           to be performed on
         """
-        self.package_name=package_name
+        self.packages_name=package_name
 
-    def install_stack(self, package_name):
+    def install_stack(self):
         """
             Installs the package on system
         """
-        pass
+        print(self.packages_name)
+        EEAptGet.install(self, self.packages_name)
 
-    def remove_stack(self, package_name):
+    def remove_stack(self):
         """
             Removes the package on system
         """
-        pass
+        EEAptGet.remove(self, self.packages_name)
+        EEAptGet.auto_remove(self)
 
-    def _is_installed(self, package_name):
+    def purge_stack(self):
+        """
+            Purge the package from system
+        """
+        EEAptGet.remove(self, self.packages_name, purge=True)
+        EEAptGet.auto_remove(self)
+
+    def _is_installed(self):
         """
             Check if package is already installed
             Return
                 True: if package is installed
                 False: if package is not installed
         """
+        result = dict()
+        for package in self.packages_name():
+            result.update({package: EEAptGet.is_installed(self, package)})
+        return result
