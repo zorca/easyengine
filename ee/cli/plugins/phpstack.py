@@ -226,3 +226,7 @@ class EEPhpStack(EEStack):
     def purge_stack(self):
         self.log.info("Purging PHP stack, please wait...")
         super(EEPhpStack, self).purge_stack()
+
+    def is_installed(self):
+        self.log.info("Checking if php5-fpm is installed")
+        return EEAptGet.is_installed(self, 'php5-fpm')

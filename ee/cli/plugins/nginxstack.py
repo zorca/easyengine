@@ -362,3 +362,7 @@ class EENginxStack(EEStack):
     def purge_stack(self):
         self.log.info("Purging NGINX stack, please wait...")
         super(EENginxStack, self).purge_stack()
+
+    def is_installed(self):
+        self.log.info("Checking if nginx is installed")
+        return EEAptGet.is_installed(self, 'nginx-custom')

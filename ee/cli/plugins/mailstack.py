@@ -10,6 +10,8 @@ from ee.core.fileutils import EEFileUtils
 from ee.core.git import EEGit
 from ee.core.services import EEService
 from ee.cli.plugins.mysqlstack import EEMysqlStack
+from ee.cli.plugins.nginxstack import EENginxStack
+from ee.cli.plugins.phpstack import EEPhpStack
 from ee.core.logging import Log
 from ee.cli.main import app
 
@@ -39,10 +41,19 @@ class EEMailStack(EEStack):
         """
         Check if requirements for this EEWebmailAdmin stack are fullfilled.
         """
+
+        if not EENginxStack(self).is_installed():
+            self.log.info("Installing nginxstack")
+            EENginxStack(self).install_stack()
+
+        if not EEPhpStack(self).is_installed():
+            self.log.info("Installing phpstack")
+            EEPhpStack(self).install_stack()
+
         if not EEMysqlStack(self).is_installed():
-            self.log.info("EEWebmailAdmin stack requires Mysqlstack to be installed")
-            print("exiting")
-            sys.exit(2)
+            self.log.info("Installing mysqlstack")
+            EEMysqlStack(self).install_stack()
+   
 
     def _add_repo(self):
         """
@@ -303,8 +314,6 @@ class EEWebmailAdmin  (EEStack):
     def _pre_install(self):
         """
         """
-
-        self._requirement_check()
         for pkg in self.packages_name:
             print([self._get_package_url(pkg), '/tmp/{0}.tar.gz'.format(pkg), pkg])
             print()
