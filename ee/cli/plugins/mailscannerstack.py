@@ -135,6 +135,14 @@ class EEMailScannerStack(EEStack):
         except CommandExecutionError as e:
             raise SiteError(" Unable to update ClamAV-Amavis config")
 
+        # If Amavis is going to be installed then configure Vimabadmin
+        # Amavis settings
+        vm_config = open('/etc/amavis/conf.d/50-user',
+                         encoding='utf-8', mode='w')
+        self.app.render((data), '50-user.mustache',
+                        out=vm_config)
+        vm_config.close()
+
         EEGit.add(self, ["/etc/amavis"], msg="Adding Amavis into Git")
         EEService.restart_service(self, 'dovecot')
         EEService.reload_service(self, 'postfix')

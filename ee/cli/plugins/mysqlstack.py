@@ -9,6 +9,7 @@ from ee.core.apt_repo import EERepo
 from ee.cli.plugins.eestack import EEStack
 from ee.core.shellexec import EEShellExec
 from ee.core.shellexec import CommandExecutionError
+from ee.core.download import EEDownload
 from ee.core.logging import Log
 from ee.cli.main import app
 
@@ -53,6 +54,19 @@ class EEMysqlStack(EEStack):
             EERepo.add_key(self, '0xcbcb082a1bb943db',
                            keyserver="keyserver.ubuntu.com")
         EEAptGet.update(self)
+
+    def setup_mysqltuner(self):
+      """
+
+      """
+      EEDownload.download(self, [["https://raw.githubusercontent.com/"
+                                  "major/MySQLTuner-perl"
+                                  "/master/mysqltuner.pl",
+                                  "/usr/bin/mysqltuner", "MySQLTuner"]])
+      # Set MySQLTuner permission
+      EEFileUtils.chmod(self, "/usr/bin/mysqltuner", 0o775)
+
+
 
     def _pre_install_stack(self):
         """
@@ -108,7 +122,28 @@ class EEMysqlStack(EEStack):
         """
         Defines activities done after installing mysql stack
         """
-        pass
+        self.setup_mysqltuner()
+        if not os.path.isfile("/etc/mysql/my.cnf"):
+            config = ("[mysqld]\nwait_timeout = 30\n"
+                      "interactive_timeout=60\nperformance_schema = 0"
+                      "\nquery_cache_type = 1")
+            config_file = open("/etc/mysql/my.cnf",
+                               encoding='utf-8', mode='w')
+            config_file.write(config)
+            config_file.close()
+        else:
+            try:
+                EEShellExec.cmd_exec(self, "sed -i \"/#max_conn"
+                                     "ections/a wait_timeout = 30 \\n"
+                                     "interactive_timeout = 60 \\n"
+                                     "performance_schema = 0\\n"
+                                     "query_cache_type = 1 \" "
+                                     "/etc/mysql/my.cnf")
+            except CommandExecutionError as e:
+                Log.error(self, "Unable to update MySQL file")
+
+        EEGit.add(self, ["/etc/mysql"], msg="Adding MySQL into Git")
+        EEService.reload_service(self, 'mysql')
 
     def install_stack(self):
         """

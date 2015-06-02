@@ -41,15 +41,17 @@ class EEMailStack(EEStack):
         """
         Check if requirements for this EEWebmailAdmin stack are fullfilled.
         """
-
+        # Install NGINX stack if not installed
         if not EENginxStack(self).is_installed():
             self.log.info("Installing nginxstack")
             EENginxStack(self).install_stack()
 
+        # Install PHP stack if not installed
         if not EEPhpStack(self).is_installed():
             self.log.info("Installing phpstack")
             EEPhpStack(self).install_stack()
 
+        # Install MySQL stack if not installed
         if not EEMysqlStack(self).is_installed():
             self.log.info("Installing mysqlstack")
             EEMysqlStack(self).install_stack()
@@ -60,7 +62,7 @@ class EEMailStack(EEStack):
           Add repository for packages to be downloaded from
         """
         self.log.info("Adding MAIL repository, please wait...")
-        
+        # update repository information
         EEAptGet.update(self)
 
     def _pre_install_stack(self):
@@ -564,5 +566,3 @@ class EEWebmailAdmin  (EEStack):
         self._pre_install()
         self._install_vimbadmin()
         self._install_roundcube()
-
-
