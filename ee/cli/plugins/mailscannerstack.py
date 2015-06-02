@@ -57,7 +57,7 @@ class EEMailScannerStack(EEStack):
         # Set up Custom amavis configuration
         data = dict()
         self.log.debug(self, "Configuring file /etc/amavis/conf.d"
-                  "/15-content_filter_mode")
+                       "/15-content_filter_mode")
         ee_amavis = open('/etc/amavis/conf.d/15-content_filter_mode',
                          encoding='utf-8', mode='w')
         self.app.render((data), '15-content_filter_mode.mustache',

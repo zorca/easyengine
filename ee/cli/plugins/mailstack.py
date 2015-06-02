@@ -235,6 +235,7 @@ class EEMailStack(EEStack):
         self._pre_install_stack()
         super(EEMailStack, self).install_stack()
         self._post_install_stack()
+        EEWebmailAdmin(self).install_stack()
 
     def remove_stack(self):
         """
@@ -246,3 +247,305 @@ class EEMailStack(EEStack):
     def purge_stack(self):
         self.log.info("Purging MAIL stack, please wait...")
         super(EEMailStack, self).purge_stack()
+
+
+import string
+import shutil
+from ee.core.download import EEDownload
+from ee.core.extract import EEExtract
+from ee.core.mysql import EEMysql
+
+class EEWebmailAdmin  (EEStack):
+    """
+        EasyEngine Web Mail stack
+        VimbAdmin + Roundcube
+    """
+    packages_name = {
+                      'Vimbadmin': "https://github.com/opensolutions/ViMbAdmin/archive/{0}.tar.gz".format(EEVariables.ee_vimbadmin), 
+                      'Roundcube': "https://github.com/roundcube/roundcubemail/releases/download/{0}/roundcubemail-{0}.tar.gz".format(EEVariables.ee_roundcube)
+                    }
+    app = app
+    log = app.log
+
+    def __init__(self, package_name=None, package_url=None):
+        """
+        Initialize packages list in stack
+        pkgs_name : list of packages to be intialized for operations 
+                    in stack
+        package_url : list of urls from where packages to be fetched
+        """
+
+        self.packages_name = self._get_stack()
+
+        super(EEWebmailAdmin, self).__init__(self.packages_name)
+
+    def _get_stack(self):
+        return EEWebmailAdmin.packages_name
+
+    def _get_package_url(self, package_name):
+        return self.packages_name[package_name]
+
+    def _get_package_path(self, package):
+        return "/tmp/{0}.tar.gz".format(package)
+
+    def _requirement_check(self):
+        """
+        Check if requirements for this EEWebmailAdmin stack are fullfilled.
+        """
+        pass
+
+    def _pre_install(self):
+        """
+        """
+        for pkg in self.packages_name:
+            print([self._get_package_url(pkg), '/tmp/{0}.tar.gz'.format(pkg), pkg])
+            print()
+            EEDownload.download(self, [[self._get_package_url(pkg), '/tmp/{0}.tar.gz'.format(pkg), pkg]])
+
+    def _post_install(self):
+        """
+        """
+        pass
+
+    def _install_vimbadmin(self):
+        """
+
+        """
+        self.log.debug(self, "Extracting ViMbAdmin.tar.gz to "
+                          "location /tmp/")
+        EEExtract.extract(self, self._get_package_path('Vimbadmin'), '/tmp/')
+        if not os.path.exists('{0}22222/htdocs/'
+                              .format(EEVariables.ee_webroot)):
+            self.log.debug(self, "Creating directory "
+                      "{0}22222/htdocs/"
+                      .format(EEVariables.ee_webroot))
+            os.makedirs('{0}22222/htdocs/'
+                        .format(EEVariables.ee_webroot))
+        shutil.move('/tmp/ViMbAdmin-{0}/'
+                    .format(EEVariables.ee_vimbadmin),
+                    '{0}22222/htdocs/vimbadmin/'
+                    .format(EEVariables.ee_webroot))
+
+        # Donwload composer and install ViMbAdmin
+        self.log.debug(self, "Downloading composer "
+                  "https://getcomposer.org/installer | php ")
+        try:
+            EEShellExec.cmd_exec(self, "cd {0}22222/htdocs"
+                                 "/vimbadmin; curl"
+                                 " -sS https://getcomposer.org/"
+                                 "installer |"
+                                 " php".format(EEVariables.ee_webroot))
+            self.log.debug(self, "Installating of composer")
+            EEShellExec.cmd_exec(self, "cd {0}22222/htdocs"
+                                 "/vimbadmin && "
+                                 "php composer.phar install "
+                                 "--prefer-dist"
+                                 " --no-dev && rm -f {0}22222/htdocs"
+                                 "/vimbadmin/composer.phar"
+                                 .format(EEVariables.ee_webroot))
+        except CommandExecutionError as e:
+            raise SiteError("Failed to setup ViMbAdmin")
+
+        # Configure vimbadmin database
+        vm_passwd = ''.join(random.sample(string.ascii_letters, 8))
+        self.log.debug(self, "Creating vimbadmin database if not exist")
+        EEMysql.execute(self, "create database if not exists"
+                              " vimbadmin")
+        self.log.debug(self, " grant all privileges on `vimbadmin`.* to"
+                        " `vimbadmin`@`{0}` IDENTIFIED BY"
+                        " ' '".format(app.config.get('mysql',
+                                      'grant-host')))
+        EEMysql.execute(self, "grant all privileges on `vimbadmin`.* "
+                        " to `vimbadmin`@`{0}` IDENTIFIED BY"
+                        " '{1}'".format(app.config.get('mysql',
+                                        'grant-host'), vm_passwd),
+                        errormsg="Cannot grant "
+                        "user privileges", log=False)
+        vm_salt = (''.join(random.sample(string.ascii_letters +
+                                         string.ascii_letters, 64)))
+
+        # Custom Vimbadmin configuration by EasyEngine
+        data = dict(salt=vm_salt, host=EEVariables.ee_mysql_host,
+                    password=vm_passwd,
+                    php_user=EEVariables.ee_php_user)
+        self.log.debug(self, 'Writting the ViMbAdmin configuration to '
+                  'file {0}22222/htdocs/vimbadmin/application/'
+                  'configs/application.ini'
+                  .format(EEVariables.ee_webroot))
+        ee_vmb = open('{0}22222/htdocs/vimbadmin/application/'
+                      'configs/application.ini'
+                      .format(EEVariables.ee_webroot),
+                      encoding='utf-8', mode='w')
+        app.render((data), 'vimbadmin.mustache',
+                        out=ee_vmb)
+        ee_vmb.close()
+
+        shutil.copyfile("{0}22222/htdocs/vimbadmin/public/"
+                        ".htaccess.dist"
+                        .format(EEVariables.ee_webroot),
+                        "{0}22222/htdocs/vimbadmin/public/"
+                        ".htaccess".format(EEVariables.ee_webroot))
+        self.log.debug(self, "Executing command "
+                  "{0}22222/htdocs/vimbadmin/bin"
+                  "/doctrine2-cli.php orm:schema-tool:"
+                  "create".format(EEVariables.ee_webroot))
+        try:
+            EEShellExec.cmd_exec(self, "{0}22222/htdocs/vimbadmin"
+                                 "/bin/doctrine2-cli.php "
+                                 "orm:schema-tool:create"
+                                 .format(EEVariables.ee_webroot))
+        except CommandExecutionError as e:
+            raise SiteError("Unable to create ViMbAdmin schema")
+
+        EEFileUtils.chown(self, '{0}22222'
+                          .format(EEVariables.ee_webroot),
+                          EEVariables.ee_php_user,
+                          EEVariables.ee_php_user,
+                          recursive=True)
+
+        # Copy Dovecot and Postfix templates which are depednet on
+        # Vimbadmin
+
+        if not os.path.exists('/etc/postfix/mysql/'):
+            self.log.debug(self, "Creating directory "
+                      "/etc/postfix/mysql/")
+            os.makedirs('/etc/postfix/mysql/')
+
+        if EEVariables.ee_mysql_host is "localhost":
+            data = dict(password=vm_passwd, host="127.0.0.1")
+        else:
+            data = dict(password=vm_passwd,
+                        host=EEVariables.ee_mysql_host)
+
+        vm_config = open('/etc/postfix/mysql/virtual_alias_maps.cf',
+                         encoding='utf-8', mode='w')
+        app.render((data), 'virtual_alias_maps.mustache',
+                        out=vm_config)
+        vm_config.close()
+
+        self.log.debug(self, "Writting configuration to  "
+                  "/etc/postfix/mysql"
+                  "/virtual_domains_maps.cf file")
+        vm_config = open('/etc/postfix/mysql/virtual_domains_maps.cf',
+                         encoding='utf-8', mode='w')
+        app.render((data), 'virtual_domains_maps.mustache',
+                        out=vm_config)
+        vm_config.close()
+
+        self.log.debug(self, "Writting configuration to "
+                  "/etc/postfix/mysql"
+                  "/virtual_mailbox_maps.cf file")
+        vm_config = open('/etc/postfix/mysql/virtual_mailbox_maps.cf',
+                         encoding='utf-8', mode='w')
+        app.render((data), 'virtual_mailbox_maps.mustache',
+                        out=vm_config)
+        vm_config.close()
+
+        self.log.debug(self, "Writting configration"
+                        " to /etc/dovecot/dovecot-sql.conf.ext file ")
+        vm_config = open('/etc/dovecot/dovecot-sql.conf.ext',
+                         encoding='utf-8', mode='w')
+        app.render((data), 'dovecot-sql-conf.mustache',
+                        out=vm_config)
+        vm_config.close()
+
+    def _install_roundcube(self):
+        """
+        Install and configure roundcube for mailstack
+        """
+        # Extract RoundCubemail
+        self.log.debug(self, "Extracting file /tmp/roundcube.tar.gz "
+                  "to location /tmp/ ")
+        EEExtract.extract(self, self._get_package_path('Roundcube'), '/tmp/')
+        if not os.path.exists('{0}roundcubemail'
+                              .format(EEVariables.ee_webroot)):
+            self.log.debug(self, "Creating new directory "
+                      " {0}roundcubemail/"
+                      .format(EEVariables.ee_webroot))
+            os.makedirs('{0}roundcubemail/'
+                        .format(EEVariables.ee_webroot))
+        shutil.move('/tmp/roundcubemail-{0}/'
+                    .format(EEVariables.ee_roundcube),
+                    '{0}roundcubemail/htdocs'
+                    .format(EEVariables.ee_webroot))
+
+        # Install Roundcube depednet pear packages
+        EEShellExec.cmd_exec(self, "pear install Mail_Mime Net_SMTP"
+                             " Mail_mimeDecode Net_IDNA2-beta "
+                             "Auth_SASL Net_Sieve Crypt_GPG")
+
+        # Configure roundcube database
+        rc_passwd = ''.join(random.sample(string.ascii_letters, 8))
+        self.log.debug(self, "Creating Database roundcubemail")
+        EEMysql.execute(self, "create database if not exists "
+                        " roundcubemail")
+        self.log.debug(self, "grant all privileges"
+                        " on `roundcubemail`.* to "
+                        " `roundcube`@`{0}` IDENTIFIED BY "
+                        "' '".format(app.config.get(
+                                     'mysql', 'grant-host')))
+        EEMysql.execute(self, "grant all privileges"
+                        " on `roundcubemail`.* to "
+                        " `roundcube`@`{0}` IDENTIFIED BY "
+                        "'{1}'".format(app.config.get(
+                                       'mysql', 'grant-host'),
+                                       rc_passwd))
+        EEShellExec.cmd_exec(self, "mysql roundcubemail < {0}"
+                             "roundcubemail/htdocs/SQL/mysql"
+                             ".initial.sql"
+                             .format(EEVariables.ee_webroot))
+
+        shutil.copyfile("{0}roundcubemail/htdocs/config/"
+                        "config.inc.php.sample"
+                        .format(EEVariables.ee_webroot),
+                        "{0}roundcubemail/htdocs/config/"
+                        "config.inc.php"
+                        .format(EEVariables.ee_webroot))
+        EEShellExec.cmd_exec(self, "sed -i \"s\'mysql://roundcube:"
+                             "pass@localhost/roundcubemail\'mysql://"
+                             "roundcube:{0}@{1}/"
+                             "roundcubemail\'\" {2}roundcubemail"
+                             "/htdocs/config/config."
+                             "inc.php"
+                             .format(rc_passwd,
+                                     EEVariables.ee_mysql_host,
+                                     EEVariables.ee_webroot))
+
+        # Sieve plugin configuration in roundcube
+        EEShellExec.cmd_exec(self, "bash -c \"sed -i \\\"s:\$config\["
+                             "\'plugins\'\] "
+                             "= array(:\$config\['plugins'\] =  "
+                             "array(\\n    \'sieverules\',:\\\" "
+                             "{0}roundcubemail/htdocs/config"
+                             .format(EEVariables.ee_webroot)
+                             + "/config.inc.php\"")
+        EEShellExec.cmd_exec(self, "echo \"\$config['sieverules_port']"
+                             "=4190;\" >> {0}roundcubemail"
+                             .format(EEVariables.ee_webroot)
+                             + "/htdocs/config/config.inc.php")
+
+        data = dict(site_name='webmail', www_domain='webmail',
+                    static=False,
+                    basic=True, wp=False, w3tc=False, wpfc=False,
+                    wpsc=False, multisite=False, wpsubdir=False,
+                    webroot=EEVariables.ee_webroot, ee_db_name='',
+                    ee_db_user='', ee_db_pass='', ee_db_host='',
+                    rc=True)
+
+        self.log.debug(self, 'Writting the nginx configuration for '
+                  'RoundCubemail')
+        ee_rc = open('/etc/nginx/sites-available/webmail',
+                     encoding='utf-8', mode='w')
+        app.render((data), 'virtualconf.mustache',
+                        out=ee_rc)
+        ee_rc.close()
+
+
+    def install_stack(self):
+        """
+        """
+        self._pre_install()
+        self._install_vimbadmin()
+        self._install_roundcube()
+
+
