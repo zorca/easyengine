@@ -9,6 +9,7 @@ from ee.core.shellexec import CommandExecutionError
 from ee.core.fileutils import EEFileUtils
 from ee.core.git import EEGit
 from ee.core.services import EEService
+from ee.cli.plugins.mysqlstack import EEMysqlStack
 from ee.core.logging import Log
 from ee.cli.main import app
 
@@ -34,6 +35,15 @@ class EEMailStack(EEStack):
     def _get_stack(self):
         return EEMailStack.packages_name
 
+    def _requirement_check(self):
+        """
+        Check if requirements for this EEWebmailAdmin stack are fullfilled.
+        """
+        if not EEMysqlStack(self).is_installed():
+            self.log.info("EEWebmailAdmin stack requires Mysqlstack to be installed")
+            print("exiting")
+            sys.exit(2)
+
     def _add_repo(self):
         """
           Add repository for packages to be downloaded from
@@ -47,6 +57,8 @@ class EEMailStack(EEStack):
         Defines pre-install activities done before installing mail stack
         """
         # Add mail repository
+
+        self._requirement_check()
         self._add_repo()
 
         self.log.debug(self, 'Executing the command debconf-set-selections.')
@@ -288,15 +300,11 @@ class EEWebmailAdmin  (EEStack):
     def _get_package_path(self, package):
         return "/tmp/{0}.tar.gz".format(package)
 
-    def _requirement_check(self):
-        """
-        Check if requirements for this EEWebmailAdmin stack are fullfilled.
-        """
-        pass
-
     def _pre_install(self):
         """
         """
+
+        self._requirement_check()
         for pkg in self.packages_name:
             print([self._get_package_url(pkg), '/tmp/{0}.tar.gz'.format(pkg), pkg])
             print()

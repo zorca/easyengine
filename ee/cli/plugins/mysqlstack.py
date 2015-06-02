@@ -18,6 +18,7 @@ class EEMysqlStack(EEStack):
         EasyEngine MYSQL stack
     """
     packages_name = ["mariadb-server", "percona-toolkit"]
+    app = app
     log = app.log
 
     def __init__(self, packages_name=None):
@@ -128,3 +129,8 @@ class EEMysqlStack(EEStack):
     def purge_stack(self):
         self.log.info("Purging MySQL stack, please wait...")
         super(EEMysqlStack, self).purge_stack()
+
+    def is_installed(self):
+        self.log.info("Checking if mysql is installed")
+        return EEShellExec.cmd_exec(self, "mysqladmin ping")
+
