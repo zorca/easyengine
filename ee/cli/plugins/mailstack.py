@@ -272,6 +272,7 @@ class EEMailStack(EEStack):
     def purge_stack(self):
         self.log.info("Purging MAIL stack, please wait...")
         super(EEMailStack, self).purge_stack()
+        EEWebmailAdmin(self).purge_stack()
 
 
 import string
@@ -468,6 +469,8 @@ class EEWebmailAdmin  (EEStack):
                         out=vm_config)
         vm_config.close()
 
+        print("Vimbadmin Security Salt : "+ vm_salt)
+
     def _install_roundcube(self):
         """
         Install and configure roundcube for mailstack
@@ -566,3 +569,17 @@ class EEWebmailAdmin  (EEStack):
         self._pre_install()
         self._install_vimbadmin()
         self._install_roundcube()
+
+    def purge_stack(self):
+        """
+        """
+        print("Inside webmailstack purge .....")
+        if EEShellExec.cmd_exec(self, "mysqladmin ping"):
+            EEMysql.execute(self, "drop database IF EXISTS vimbadmin")
+            EEMysql.execute(self, "drop database IF EXISTS roundcubemail")
+        if EEFileUtils.isexist(self, "{0}22222/htdocs/vimbadmin".format(EEVariables.ee_webroot)):
+            print("Removing : {0}22222/htdocs/vimbadmin".format(EEVariables.ee_webroot))
+            EEFileUtils.remove(self, "{0}22222/htdocs/vimbadmin".format(EEVariables.ee_webroot))
+        if EEFileUtils.isexist(self, "{0}roundcubemail".format(EEVariables.ee_webroot)):
+            print("Removing: {0}roundcubemail".format(EEVariables.ee_webroot))
+            EEFileUtils.remove(self, "{0}roundcubemail".format(EEVariables.ee_webroot))
