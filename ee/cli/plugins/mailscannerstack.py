@@ -46,6 +46,11 @@ class EEMailScannerStack(EEStack):
         """
         Defines pre-install activities done before installing mail stack
         """
+
+        if not EEVariables.ee_ram > 1024:
+            self.log.info("System RAM seems to be less than 1GB, "
+                          "skipping mailsacanner installation")
+            sys.exit(2)
         # Add mail repository
         self._add_repo()
 

@@ -14,6 +14,8 @@ class EEVariables():
     # EasyEngine version
     ee_version = "3.1.9"
 
+    ee_downloads = "/tmp/ee/downloads/"
+
     # EasyEngine packages versions
     ee_wp_cli = "0.19.1"
     ee_adminer = "4.2.1"
@@ -145,6 +147,44 @@ class EEVariables():
                         .format(codename=ee_platform_codename))
 
     ee_hhvm = ["hhvm"]
+
+    ee_wpclistack = {
+                      'wpcli': "https://github.com/wp-cli/wp-cli/releases/download/"
+                               "v{0}/wp-cli-{0}.phar".format(ee_wp_cli)
+    }
+
+    ee_phpmyadminstack = {
+                           'phpmyadmin': "https://github.com/phpmyadmin/phpmyadmin/archive/STABLE.tar.gz", 
+                         }
+
+    ee_adminerstack = {
+                        'adminer': "http://downloads.sourceforge.net/adminer/adminer-{0}.php".format(ee_adminer),
+                      }
+
+    ee_admin = {
+                'phpmyadmin': "https://github.com/phpmyadmin/phpmyadmin/archive/STABLE.tar.gz",
+                'adminer': "http://downloads.sourceforge.net/adminer/adminer-{0}.php".format(ee_adminer),
+                'phpmemcacheadmin' : "http://phpmemcacheadmin.googlecode.com/files/phpMemcachedAdmin-1.2.2-r262.tar.gz",
+                'cleancache' : "https://raw.githubusercontent.com/rtCamp/eeadmin/master/cache/nginx/clean.php",
+                'opcache' : "https://raw.github.com/rlerdorf/opcache-status/master/opcache.php",
+                'webgrind' : "https://github.com/jokkedk/webgrind/archive/master.tar.gz",
+                'ptqueryadvisor' : "http://bazaar.launchpad.net/~percona-toolkit-dev/percona-toolkit/2.1/download/head:/ptquerydigest-20110624220137-or26tn4expb9ul2a-16/pt-query-digest",
+                'anemometer' : "https://github.com/box/Anemometer/archive/master.tar.gz",
+                }
+
+    ee_utils = {
+                'phpmemcacheadmin' : "http://phpmemcacheadmin.googlecode.com/files/phpMemcachedAdmin-1.2.2-r262.tar.gz",
+                'cleancache' : "https://raw.githubusercontent.com/rtCamp/eeadmin/master/cache/nginx/clean.php",
+                'opcache' : "https://raw.github.com/rlerdorf/opcache-status/master/opcache.php",
+                'webgrind' : "https://github.com/jokkedk/webgrind/archive/master.tar.gz",
+                'ptqueryadvisor' : "http://bazaar.launchpad.net/~percona-toolkit-dev/percona-toolkit/2.1/download/head:/ptquerydigest-20110624220137-or26tn4expb9ul2a-16/pt-query-digest",
+                'anemometer' : "https://github.com/box/Anemometer/archive/master.tar.gz",
+              }
+
+    ee_webmailstack = {
+                        'vimbadmin': "https://github.com/opensolutions/ViMbAdmin/archive/{0}.tar.gz".format(ee_vimbadmin), 
+                        'roundcube': "https://github.com/roundcube/roundcubemail/releases/download/{0}/roundcubemail-{0}.tar.gz".format(ee_roundcube)
+                      }
 
     # Repo path
     ee_repo_file = "ee-repo.list"

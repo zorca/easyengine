@@ -54,7 +54,7 @@ except Exception as e:
     os.system("git config --global user.email {0}".format(ee_email))
 
 setup(name='ee',
-      version='3.1.9',
+      version='3.2.x',
       description=long_description,
       long_description=long_description,
       classifiers=[],
@@ -75,7 +75,8 @@ setup(name='ee',
           # "nose",
           # "coverage",
           # Required to function
-          'cement == 2.4',
+          'cement == 2.6',
+          'colorlog',
           'pystache',
           'python-apt',
           'pynginxconfig',

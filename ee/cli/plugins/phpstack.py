@@ -211,10 +211,11 @@ class EEPhpStack(EEStack):
         """
         Install PHP stack
         """
-        self.log.info("Installing PHP stack, please wait...")
-        self._pre_install_stack()
-        super(EEPhpStack, self).install_stack()
-        self._post_install_stack()
+        if not self.is_installed():
+          self.log.info("Installing PHP stack, please wait...")
+          self._pre_install_stack()
+          super(EEPhpStack, self).install_stack()
+          self._post_install_stack()
 
     def remove_stack(self):
         """
