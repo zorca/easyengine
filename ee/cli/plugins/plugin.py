@@ -56,7 +56,7 @@ class EEPluginController(CementBaseController):
     @expose(help="Search plugins")
     def search(self):
         """Search plugins into EPM respository"""
-        url = ("http://epm.rtcamp.net:3000/query?name={0}"
+        url = ("http://epm.rtcamp.net:3000/search?query={0}"
                .format(self.app.pargs.plugin_name))
         pinfo = api_return(url)
         self.app.log.info("Available Packages:")
