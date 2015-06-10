@@ -1,4 +1,6 @@
 """EasyEngine plugin manager"""
+from cement.core.controller import CementBaseController, expose
+from cement.core import handler, hook
 from ee.core.api_return import api_return
 import pip
 
