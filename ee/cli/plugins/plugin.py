@@ -59,9 +59,9 @@ class EEPluginController(CementBaseController):
         url = ("http://epm.rtcamp.net:3000/query?name={0}"
                .format(self.app.pargs.plugin_name))
         pinfo = api_return(url)
-        self.log.info("Available Packages:")
+        self.app.log.info("Available Packages:")
         for info in pinfo:
-            self.log.info(info['name'])
+            self.app.log.info(info['name'])
 
     @expose(help="Upgrade installed plugins")
     def upgrade(self):
@@ -74,16 +74,16 @@ class EEPluginController(CementBaseController):
         url = ("http://epm.rtcamp.net:3000/info?name={0}"
                .format(self.app.pargs.plugin_name))
         pinfo = api_return(url)
-        self.log.info("Package Infomation:")
-        self.log.info("Name: {0}".format(pinfo[0]['name']))
-        self.log.info("Type: {0}".format(pinfo[0]['type']))
-        self.log.info("Version: {0}".format(pinfo[0]['version']))
-        self.log.info("Description: {0}".format(pinfo[0]['description']))
-        self.log.info("Author: {0}".format(pinfo[0]['author']))
-        self.log.info("Package URL: {0}".format(pinfo[0]['plugin_url']))
-        self.log.info("Repo URL: {0}".format(pinfo[0]['repo_url']))
-        self.log.info("License: {0}".format(pinfo[0]['license']))
-        self.log.info("Price in $: {0}".format(pinfo[0]['price']))
+        self.app.log.info("Package Infomation:")
+        self.app.log.info("Name: {0}".format(pinfo[0]['name']))
+        self.app.log.info("Type: {0}".format(pinfo[0]['type']))
+        self.app.log.info("Version: {0}".format(pinfo[0]['version']))
+        self.app.log.info("Description: {0}".format(pinfo[0]['description']))
+        self.app.log.info("Author: {0}".format(pinfo[0]['author']))
+        self.app.log.info("Package URL: {0}".format(pinfo[0]['plugin_url']))
+        self.app.log.info("Repo URL: {0}".format(pinfo[0]['repo_url']))
+        self.app.log.info("License: {0}".format(pinfo[0]['license']))
+        self.app.log.info("Price in $: {0}".format(pinfo[0]['price']))
 
     @expose(help="Enable installed plugin")
     def enable(self):
