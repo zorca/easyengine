@@ -15,6 +15,7 @@ class EEPostfixStack(EEStack):
         EasyEngine Postfix stack
     """
     packages_name = EEVariables.ee_postfix
+    app = app
     log = app.log
 
     def __init__(self, packages_name=None):

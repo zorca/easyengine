@@ -1,11 +1,15 @@
 import os
 import sys
 import random
+import shutil
 import string
 import configparser
 from ee.core.variables import EEVariables
 from ee.core.aptget import EEAptGet
 from ee.core.apt_repo import EERepo
+from ee.core.fileutils import EEFileUtils
+from ee.core.git import EEGit
+from ee.core.services import EEService
 from ee.cli.plugins.eestack import EEStack
 from ee.core.shellexec import EEShellExec
 from ee.core.shellexec import CommandExecutionError
@@ -18,7 +22,7 @@ class EEMysqlStack(EEStack):
     """
         EasyEngine MYSQL stack
     """
-    packages_name = ["mariadb-server", "percona-toolkit"]
+    packages_name = EEVariables.ee_mysql
     app = app
     log = app.log
 
@@ -50,23 +54,29 @@ class EEMysqlStack(EEStack):
         if EEVariables.ee_platform_codename != 'jessie':
             EERepo.add(self, repo_url=EEVariables.ee_mysql_repo)
             self.log.debug('Adding key for {0}'
-                      .format(EEVariables.ee_mysql_repo))
+                           .format(EEVariables.ee_mysql_repo))
             EERepo.add_key(self, '0xcbcb082a1bb943db',
                            keyserver="keyserver.ubuntu.com")
         EEAptGet.update(self)
 
-    def setup_mysqltuner(self):
+    def _setup_mysqltuner(self):
       """
+      This function sets up mysqltuner
+      """
+      self.log.info("setting up mysqltuner, please wait...")
+      path = EEDownload('mysqltuner', url="https://raw.githubusercontent.com/"
+                        "major/MySQLTuner-perl/master/mysqltuner.pl").download()
 
-      """
-      EEDownload.download(self, [["https://raw.githubusercontent.com/"
-                                  "major/MySQLTuner-perl"
-                                  "/master/mysqltuner.pl",
-                                  "/usr/bin/mysqltuner", "MySQLTuner"]])
+      shutil.move(path, "/usr/bin/mysqltuner")
       # Set MySQLTuner permission
       EEFileUtils.chmod(self, "/usr/bin/mysqltuner", 0o775)
 
-
+    def _remove_mysqltuner(self):
+      """
+      Remove mysqltuner
+      """
+      self.log.info("Removing mysqltuner, please wait...")
+      EEFileUtils.remove(self, ['/usr/bin/mysqltuner'])
 
     def _pre_install_stack(self):
         """
@@ -122,7 +132,7 @@ class EEMysqlStack(EEStack):
         """
         Defines activities done after installing mysql stack
         """
-        self.setup_mysqltuner()
+        self._setup_mysqltuner()
         if not os.path.isfile("/etc/mysql/my.cnf"):
             config = ("[mysqld]\nwait_timeout = 30\n"
                       "interactive_timeout=60\nperformance_schema = 0"
@@ -149,10 +159,11 @@ class EEMysqlStack(EEStack):
         """
         Install MYSQL stack
         """
-        self.log.info("Installing MySQL stack, please wait...")
-        self._pre_install_stack()
-        super(EEMysqlStack, self).install_stack()
-        self._post_install_stack()
+        if not self.is_installed():
+          self.log.info("Installing MySQL stack, please wait...")
+          self._pre_install_stack()
+          super(EEMysqlStack, self).install_stack()
+          self._post_install_stack()
 
     def remove_stack(self):
         """
@@ -164,8 +175,9 @@ class EEMysqlStack(EEStack):
     def purge_stack(self):
         self.log.info("Purging MySQL stack, please wait...")
         super(EEMysqlStack, self).purge_stack()
+        self.remove_mysqltuner()
 
     def is_installed(self):
-        self.log.info("Checking if mysql is installed")
+        self.log.info("checking if mysql is installed")
         return EEShellExec.cmd_exec(self, "mysqladmin ping")
 

@@ -135,17 +135,19 @@ class EEHhvmStack(EEStack):
 
             if not EEService.reload_service(self, 'nginx'):
                 self.log.error(self, "Failed to reload Nginx, please check "
-                                "output of `nginx -t`")
+                               "output of `nginx -t`")
 
 
     def install_stack(self):
         """
         Install HHVM stack
         """
-        self.log.info("Installing HHVM stack, please wait...")
-        self._pre_install_stack()
-        super(EEHhvmStack, self).install_stack()
-        self._post_install_stack()
+        if not self.is_installed():
+            self.log.info("Installing HHVM stack, please wait...")
+            self._pre_install_stack()
+            super(EEHhvmStack, self).install_stack()
+            self._post_install_stack()
+
 
     def remove_stack(self):
         """
@@ -157,3 +159,7 @@ class EEHhvmStack(EEStack):
     def purge_stack(self):
         self.log.info("Purging HHVM stack, please wait...")
         super(EEHhvmStack, self).purge_stack()
+
+    def is_installed(self):
+        self.log.info("Checking if hhvm is installed")
+        return EEAptGet.is_installed(self, 'hhvm')

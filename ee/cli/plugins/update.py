@@ -24,12 +24,11 @@ class EEUpdateController(CementBaseController):
     @expose(hide=True)
     def default(self):
         filename = "eeupdate" + time.strftime("%Y%m%d-%H%M%S")
-        EEDownload.download(self, [["http://rt.cx/eeup",
-                                    "/tmp/{0}".format(filename),
-                                    "update script"]])
+        path = EEDownload('EasyEngine update script', url="http://rt.cx/eeup",
+                           out_file=filename).download()
         try:
             Log.info(self, "updating EasyEngine, please wait...")
-            os.system("bash /tmp/{0}".format(filename))
+            os.system("bash {0}".format(path))
         except OSError as e:
             Log.debug(self, str(e))
             Log.error(self, "EasyEngine update failed !")

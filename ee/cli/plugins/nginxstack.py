@@ -33,7 +33,11 @@ class EENginxStack(EEStack):
                     in stack
         """
 
-        self.packages_name = self._get_stack()  
+        self.packages_name = self._get_stack()
+        self.http_auth_user = 'easyengine'
+        self.http_auth_pass =  (''.join([random.choice
+                                (string.ascii_letters + string.digits)
+                                for n in range(6)]))
         super(EENginxStack, self).__init__(self.packages_name)
 
     def _get_stack(self):
@@ -63,6 +67,8 @@ class EENginxStack(EEStack):
         """
         Defines activities done after installing nginx stack
         """
+        self.log.debug("Running post install, please wait...")
+
         if ((not EEShellExec.cmd_exec(self, "grep -q -Hr EasyEngine "
             "/etc/nginx")) and os.path.isfile('/etc/nginx/nginx.conf')):
             nc = NginxConfig()
@@ -251,16 +257,14 @@ class EENginxStack(EEStack):
                         out=ee_nginx)
             ee_nginx.close()
 
-            passwd = ''.join([random.choice
-                             (string.ascii_letters + string.digits)
-                             for n in range(6)])
             try:
-                EEShellExec.cmd_exec(self, "printf \"easyengine:"
+                EEShellExec.cmd_exec(self, "printf \"{user}:"
                                      "$(openssl passwd -crypt "
                                      "{password} 2> /dev/null)\n\""
                                      "> /etc/nginx/htpasswd-ee "
                                      "2>/dev/null"
-                                     .format(password=passwd))
+                                     .format(user=self.http_auth_user, 
+                                             password=self.http_auth_pass))
             except CommandExecutionError as e:
                 self.log.error(self, "Failed to save HTTP Auth")
 
@@ -339,6 +343,8 @@ class EENginxStack(EEStack):
             EEGit.add(self,
                       ["/etc/nginx"], msg="Adding Nginx into Git")
             EEService.reload_service(self, 'nginx')
+
+
             # self.msg = (self.msg + ["HTTP Auth User Name: easyengine"]
             #             + ["HTTP Auth Password : {0}".format(passwd)])
 
@@ -347,10 +353,13 @@ class EENginxStack(EEStack):
         """
         Install NGINX stack
         """
-        self.log.info("Installing NGINX stack, please wait...")
-        self._pre_install_stack()
-        super(EENginxStack, self).install_stack()
-        self._post_install_stack()
+        if not self.is_installed():
+            self.log.info("Installing NGINX stack, please wait...")
+            self._pre_install_stack()
+            super(EENginxStack, self).install_stack()
+            self._post_install_stack()
+            return (self.http_auth_user, self.http_auth_pass)
+
 
     def remove_stack(self):
         """

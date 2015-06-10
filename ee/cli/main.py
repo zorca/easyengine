@@ -64,6 +64,7 @@ class EEApp(foundation.CementApp):
 
         argument_handler = EEArgHandler
 
+
         debug = TOGGLE_DEBUG
 
 
