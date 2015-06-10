@@ -34,7 +34,7 @@ class EEPluginController(CementBaseController):
                .format(self.app.pargs.plugin_name))
         pinfo = api_return(url)
         try:
-            pip.main(['install', '-q', pinfo[0].['file']])
+            pip.main(['install', pinfo[0]['file']])
         except Exception as e:
             return False
 
