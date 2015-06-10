@@ -43,7 +43,10 @@ class EEPluginController(CementBaseController):
     @expose(help="Uninstall plugin")
     def uninstall(self):
         """Start Uninstallation of plugins"""
-        pass
+        try:
+            pip.main(['uninstall', self.app.pargs.plugin_name])
+        except Exception as e:
+            return False
 
     @expose(help="List installed plugins")
     def list(self):
@@ -53,17 +56,34 @@ class EEPluginController(CementBaseController):
     @expose(help="Search plugins")
     def search(self):
         """Search plugins into EPM respository"""
-        pass
+        url = ("http://epm.rtcamp.net:3000/query?name={0}"
+               .format(self.app.pargs.plugin_name))
+        pinfo = api_return(url)
+        self.log.info("Available Packages:")
+        for info in pinfo:
+            self.log.info(info['name'])
 
     @expose(help="Upgrade installed plugins")
     def upgrade(self):
         """Upgrade installed plugins"""
         pass
 
-    @expose(help="Display package information")
+    @expose(help="Display plugin information")
     def info(self):
-        """Display package information"""
-        pass
+        """Display plugin information"""
+        url = ("http://epm.rtcamp.net:3000/info?name={0}"
+               .format(self.app.pargs.plugin_name))
+        pinfo = api_return(url)
+        self.log.info("Package Infomation:")
+        self.log.info("Name: {0}".format(pinfo[0]['name']))
+        self.log.info("Type: {0}".format(pinfo[0]['type']))
+        self.log.info("Version: {0}".format(pinfo[0]['version']))
+        self.log.info("Description: {0}".format(pinfo[0]['description']))
+        self.log.info("Author: {0}".format(pinfo[0]['author']))
+        self.log.info("Package URL: {0}".format(pinfo[0]['plugin_url']))
+        self.log.info("Repo URL: {0}".format(pinfo[0]['repo_url']))
+        self.log.info("License: {0}".format(pinfo[0]['license']))
+        self.log.info("Price in $: {0}".format(pinfo[0]['price']))
 
     @expose(help="Enable installed plugin")
     def enable(self):
