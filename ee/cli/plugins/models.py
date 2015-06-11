@@ -55,3 +55,35 @@ class SiteDB(Base):
     #
     # def getType(self):
     #     return '%r>' % (self.site_type)
+
+
+class PluginDB(Base):
+    """
+        Databse model for site table
+    """
+    __tablename__ = 'plugins'
+    __table_args__ = {'extend_existing': True}
+    id = Column(Integer, primary_key=True)
+    pluginname = Column(String, unique=True)
+
+    plugin_type = Column(String)
+    plugin_version = Column(String)
+
+    # Use default=func.now() to set the default created time
+    # of a site to be the current time when a
+    # Site record was created
+
+    installed_on = Column(DateTime, default=func.now())
+    is_enabled = Column(Boolean, unique=False, default=True, nullable=False)
+
+    def __init__(self, pluginname, plugin_type=None, plugin_version=None,
+                 plugin_enabled=True):
+        self.pluginname = pluginname
+        self.plugin_type = plugin_type
+        self.plugin_version = plugin_version
+        self.is_enabled = plugin_enabled
+    # def __repr__(self):
+    #     return '<Site %r>' % (self.site_type)
+    #
+    # def getType(self):
+    #     return '%r>' % (self.site_type)
