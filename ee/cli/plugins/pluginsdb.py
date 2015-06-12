@@ -9,49 +9,40 @@ import sys
 import glob
 
 
-def addNewPlugin(self, site, stype, cache, path,
-                 enabled=True, ssl=False, fs='ext4', db='mysql',
-                 db_name=None, db_user=None, db_password=None,
-                 db_host='localhost', hhvm=0, pagespeed=0):
+def addNewPlugin(self, plugin, plugin_type, plugin_version,
+                 plugin_enabled):
     """
     Add New Site record information into ee database.
     """
     try:
-        newRec = PluginDB(site, stype, cache, path, enabled, ssl, fs, db,
-                          db_name, db_user, db_password, db_host, hhvm,
-                          pagespeed)
+        newRec = PluginDB(plugin, plugin_type, plugin_version,
+                          plugin_enabled)
         db_session.add(newRec)
         db_session.commit()
     except Exception as e:
-        Log.debug(self, "{0}".format(e))
         Log.error(self, "Unable to add site to database")
 
 
-def getPluginInfo(self, site):
+def getPluginInfo(self, plugin):
     """
         Retrieves site record from ee databse
     """
     try:
-        q = PluginDB.query.filter(PluginDB.sitename == site).first()
+        q = PluginDB.query.filter(PluginDB.pluginname == plugin).first()
         return q
     except Exception as e:
-        Log.debug(self, "{0}".format(e))
         Log.error(self, "Unable to query database for site info")
 
 
-def updatePluginInfo(self, site, stype='', cache='', webroot='',
-                     enabled=True, ssl=False, fs='', db='', db_name=None,
-                     db_user=None, db_password=None, db_host=None, hhvm=None,
-                     pagespeed=None):
+def updatePluginInfo(self, plugin, type='', version='', enabled=True):
     """updates site record in database"""
     try:
-        q = PluginDB.query.filter(PluginDB.sitename == site).first()
+        q = PluginDB.query.filter(PluginDB.pluginname == plugin).first()
     except Exception as e:
-        Log.debug(self, "{0}".format(e))
         Log.error(self, "Unable to query database for site info")
 
     if not q:
-        Log.error(self, "{0} does not exist in database".format(site))
+        Log.error(self, "{0} is not installed".format(site))
 
     # Check if new record matches old if not then only update database
     if stype and q.site_type != stype:
@@ -95,22 +86,21 @@ def updatePluginInfo(self, site, stype='', cache='', webroot='',
         Log.error(self, "Unable to update site info in application database.")
 
 
-def deletePluginInfo(self, site):
+def deletePluginInfo(self, plugin):
     """Delete site record in database"""
     try:
-        q = PluginDB.query.filter(PluginDB.sitename == site).first()
+        q = PluginDB.query.filter(PluginDB.pluginname == plugin).first()
     except Exception as e:
         Log.debug(self, "{0}".format(e))
         Log.error(self, "Unable to query database")
 
     if not q:
-        Log.error(self, "{0} does not exist in database".format(site))
+        Log.error(self, "{0} does not exist".format(site))
 
     try:
         db_session.delete(q)
         db_session.commit()
     except Exception as e:
-        Log.debug(self, "{0}".format(e))
         Log.error(self, "Unable to delete site from application database.")
 
 
@@ -122,5 +112,4 @@ def getAllplugins(self):
         q = PluginDB.query.all()
         return q
     except Exception as e:
-        Log.debug(self, "{0}".format(e))
         Log.error(self, "Unable to query database")
