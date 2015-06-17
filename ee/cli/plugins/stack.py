@@ -229,7 +229,7 @@ class EEStackController(CementBaseController):
             EEAdminStack(package_dict=EEVariables.ee_utils).remove_stack()
 
         # Hook for stack remove plugins
-        hook.run('stack_install_hook', self.app)
+        hook.run('stack_remove_hook', self.app)
 
 
     @expose(help="Purge packages")
