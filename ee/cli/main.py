@@ -64,6 +64,7 @@ class EEApp(foundation.CementApp):
 
         argument_handler = EEArgHandler
 
+        define_hooks = ['stack_install_hook', 'stack_remove_hook']
 
         debug = TOGGLE_DEBUG
 

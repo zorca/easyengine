@@ -49,7 +49,6 @@ class EEStackController(CementBaseController):
         stacked_on = 'base'
         stacked_type = 'nested'
         description = 'Stack command manages stack operations'
-        define_hooks = ['stack_install_hook', 'stack_remove_hook']
         arguments = [
             (['--all'],
                 dict(help='Install all stack', action='store_true')),
