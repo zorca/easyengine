@@ -89,7 +89,7 @@ class EEStackController(CementBaseController):
         self.app.args.print_help()
         #EEAdminStack(self).purge_stack()
 
-    
+
     @expose(help="Install packages")
     def install(self, packages=[], apt_packages=[], disp_msg=True):
         """Start installation of packages"""
@@ -158,6 +158,9 @@ class EEStackController(CementBaseController):
         if self.app.pargs.utils:
             EEAdminStack(package_dict=EEVariables.ee_utils).install_stack()
 
+        # Hook for stack install plugin
+        hook.run('stack_install_hook', self.app)
+
 
     @expose(help="Remove packages")
     def remove(self):
@@ -225,8 +228,10 @@ class EEStackController(CementBaseController):
         if self.app.pargs.utils:
             EEAdminStack(package_dict=EEVariables.ee_utils).remove_stack()
 
+        # Hook for stack remove plugins
+        hook.run('stack_install_hook', self.app)
 
-        
+
     @expose(help="Purge packages")
     def purge(self):
         """Start purging of packages"""
