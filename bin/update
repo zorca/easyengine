@@ -526,6 +526,8 @@ if [[ $EE_CURRENT_VERSION < $EE_LATEST_VERSION ]]; then
 		ee_lib_echo_info "source /etc/bash_completion.d/ee" | tee -ai $EE_UPDATE_LOG
 		echo
 		ee_lib_echo "EasyEngine (ee) updated successfully"
+	else
+		exit 2
 	fi
 else
 	ee_lib_echo "Latest version ($EE_CURRENT_VERSION) already installed"
