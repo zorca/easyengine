@@ -1213,6 +1213,11 @@ def setupLetsEncrypt(self, ee_domain_name):
     EEFileUtils.chdir(self, '/opt/letsencrypt')
     EEShellExec.cmd_exec(self, "git pull")
 
+    if os.path.isfile("/etc/letsencrypt/live/{0}/cert.pem".format(ee_domain_name)):
+        Log.info(self, "LetsEncrypt SSL Certificate found for the domain {0}"
+                 .format(ee_domain_name))
+        return 0
+
     ssl = EEShellExec.cmd_exec(self, "./letsencrypt-auto certonly --webroot -w /var/www/{0}/htdocs/ -d {0} -d www.{0} "
                                 .format(ee_domain_name)
                                 + "--email {0} --text --agree-tos".format(ee_wp_email))
@@ -1330,9 +1335,3 @@ def httpsRedirect(self,ee_domain_name,redirect=True):
                                   "/etc/nginx/conf.d/force-ssl-{0}.conf.disabled".format(ee_domain_name))
              Log.info(self, "Disabled HTTPS Force Redirection for Site "
                          " http://{0}".format(ee_domain_name))
-
-
-
-
-
-
