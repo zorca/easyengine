@@ -5,7 +5,7 @@
 	"homepage": "https://easyengine.io",
 	"license": "MIT",
 	"bin": [
-		"ee/wp"
+		"bin/ee"
 	],
 	"require": {
 		"php": ">=5.3.2",
@@ -30,6 +30,6 @@
 		"behat/behat": "2.5.*"
 	},
 	"autoload": {
-		"psr-0": { "EE_CLI": "php" }
+		"psr-0": { "EE_CLI": "app" }
 	}
 }
