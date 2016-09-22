@@ -3,7 +3,7 @@
 namespace EE_CLI\Dispatcher;
 
 /**
- * Get the path to a command, e.g. "core download"
+ * Get the path to a command
  *
  * @param EE_CLI\Dispatcher\Subcommand $command
  * @return string

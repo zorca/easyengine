@@ -193,14 +193,14 @@ class Runner {
 					$child = array_pop( $cmd_path );
 					$parent_name = implode( ' ', $cmd_path );
 					return sprintf(
-						"'%s' is not a registered subcommand of '%s'. See 'wp help %s'.",
+						"'%s' is not a registered subcommand of '%s'. See 'ee help %s'.",
 						$child,
 						$parent_name,
 						$parent_name
 					);
 				} else {
 					return sprintf(
-						"'%s' is not a registered wp command. See 'wp help'.",
+						"'%s' is not a registered ee command. See 'ee help'.",
 						$full_name
 					);
 				}
@@ -520,7 +520,7 @@ class Runner {
 		}
 
 		// First try at showing man page
-		if ( 'help' === $this->arguments[0] && ( ! $this->wp_exists() || ! Utils\locate_wp_config() ) ) {
+		if ( 'help' === $this->arguments[0] ) {
 			$this->_run_command();
 		}
 
