@@ -33,7 +33,7 @@ class EE_CLI {
 		static $configurator;
 
 		if ( !$configurator ) {
-			$configurator = new EE_CLI\Configurator( EE_CLI_ROOT . '/app/ee-cli/config-spec.php' );
+			$configurator = new EE_CLI\Configurator( EE_CLI_ROOT . '/app/config-spec.php' );
 		}
 
 		return $configurator;
