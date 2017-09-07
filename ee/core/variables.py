@@ -85,19 +85,19 @@ class EEVariables():
     # EasyEngine stack installation variables
     # Nginx repo and packages
     if ee_platform_codename == 'precise':
-        ee_nginx_repo = ("deb http://download.opensuse.org/repositories/home:"
+        ee_nginx_repo = ("deb http://ftp.byfly.by/pub/opensuse/repositories/home:"
                          "/rtCamp:/EasyEngine/xUbuntu_12.04/ /")
     elif ee_platform_codename == 'trusty':
-        ee_nginx_repo = ("deb http://download.opensuse.org/repositories/home:"
+        ee_nginx_repo = ("deb http://ftp.byfly.by/pub/opensuse/repositories/home:"
                          "/rtCamp:/EasyEngine/xUbuntu_14.04/ /")
     elif ee_platform_codename == 'xenial':
-        ee_nginx_repo = ("deb http://download.opensuse.org/repositories/home:"
+        ee_nginx_repo = ("deb http://ftp.byfly.by/pub/opensuse/repositories/home:"
                          "/rtCamp:/EasyEngine/xUbuntu_16.04/ /")
     elif ee_platform_codename == 'wheezy':
-        ee_nginx_repo = ("deb http://download.opensuse.org/repositories/home:"
+        ee_nginx_repo = ("deb http://ftp.byfly.by/pub/opensuse/repositories/home:"
                          "/rtCamp:/EasyEngine/Debian_7.0/ /")
     elif ee_platform_codename == 'jessie':
-        ee_nginx_repo = ("deb http://download.opensuse.org/repositories/home:"
+        ee_nginx_repo = ("deb http://ftp.byfly.by/pub/opensuse/repositories/home:"
                          "/rtCamp:/EasyEngine/Debian_8.0/ /")
 
 
