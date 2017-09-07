@@ -439,12 +439,12 @@ if [ -f /etc/ImageMagick/policy.xml  ]
         ee_lib_echo "Updating Nginx configuration, please wait..."
         # From version 3.1.10 we are using Suse builder for repository
         if [ "$ee_distro_version" == "precise" ]; then
-            grep -Hr 'http://download.opensuse.org/repositories/home:/rtCamp:/EasyEngine/xUbuntu_12.04/ /' /etc/apt/sources.list.d/ &>> /dev/null
+            grep -Hr 'http://ftp.byfly.by/pub/opensuse/repositories/home:/rtCamp:/EasyEngine/xUbuntu_12.04/ /' /etc/apt/sources.list.d/ &>> /dev/null
             if [[ $? -ne 0 ]]; then
                 if [ -f /etc/apt/sources.list.d/rtcamp-nginx-precise.list ]; then
                     rm -rf /etc/apt/sources.list.d/rtcamp-nginx-precise.list
                 fi
-                echo -e "\ndeb http://download.opensuse.org/repositories/home:/rtCamp:/EasyEngine/xUbuntu_12.04/ /" >> /etc/apt/sources.list.d/ee-repo.list
+                echo -e "\ndeb http://ftp.byfly.by/pub/opensuse/repositories/home:/rtCamp:/EasyEngine/xUbuntu_12.04/ /" >> /etc/apt/sources.list.d/ee-repo.list
                 gpg --keyserver "hkp://pgp.mit.edu" --recv-keys '3050AC3CD2AE6F03'
                 gpg -a --export --armor '3050AC3CD2AE6F03' | apt-key add -
                 if [ -f /etc/nginx/conf.d/ee-nginx.conf ]; then
@@ -470,12 +470,12 @@ if [ -f /etc/ImageMagick/policy.xml  ]
             dpkg --get-selections | grep -v deinstall | grep nginx-mainline
 
           elif [ "$ee_distro_version" == "trusty" ]; then
-            grep -Hr 'http://download.opensuse.org/repositories/home:/rtCamp:/EasyEngine/xUbuntu_14.04/ /' /etc/apt/sources.list.d/ &>> /dev/null
+            grep -Hr 'http://ftp.byfly.by/pub/opensuse/repositories/home:/rtCamp:/EasyEngine/xUbuntu_14.04/ /' /etc/apt/sources.list.d/ &>> /dev/null
             if [[ $? -ne 0 ]]; then
                 if [ -f /etc/apt/sources.list.d/rtcamp-nginx-trusty.list ]; then
                     rm -rf /etc/apt/sources.list.d/rtcamp-nginx-trusty.list
                 fi
-                echo -e "\ndeb http://download.opensuse.org/repositories/home:/rtCamp:/EasyEngine/xUbuntu_14.04/ /" >> /etc/apt/sources.list.d/ee-repo.list
+                echo -e "\ndeb http://ftp.byfly.by/pub/opensuse/repositories/home:/rtCamp:/EasyEngine/xUbuntu_14.04/ /" >> /etc/apt/sources.list.d/ee-repo.list
                 gpg --keyserver "hkp://pgp.mit.edu" --recv-keys '3050AC3CD2AE6F03'
                 gpg -a --export --armor '3050AC3CD2AE6F03' | apt-key add -
                 if [ -f /etc/nginx/conf.d/ee-nginx.conf ]; then
@@ -500,7 +500,7 @@ if [ -f /etc/ImageMagick/policy.xml  ]
             fi
 
         elif [ "$ee_distro_version" == "wheezy" ]; then
-            grep -Hr 'http://download.opensuse.org/repositories/home:/rtCamp:/EasyEngine/Debian_7.0/ /' /etc/apt/sources.list.d/ &>> /dev/null
+            grep -Hr 'http://ftp.byfly.by/pub/opensuse/repositories/home:/rtCamp:/EasyEngine/Debian_7.0/ /' /etc/apt/sources.list.d/ &>> /dev/null
             #grep -Hr "deb http://packages.dotdeb.org wheezy all" /etc/apt/sources.list.d/ee-repo.list &>> /dev/null
             if [[ $? -ne 0 ]]; then
                 # if [ -f /etc/apt/sources.list.d/dotdeb-wheezy.list ]; then
@@ -508,7 +508,7 @@ if [ -f /etc/ImageMagick/policy.xml  ]
                 # else
                 #     sed -i "/deb http:\/\/packages.dotdeb.org wheezy all/d" /etc/apt/sources.list.d/ee-repo.list &>> /dev/null
                 # fi
-                echo -e "deb http://download.opensuse.org/repositories/home:/rtCamp:/EasyEngine/Debian_7.0/ /" >> /etc/apt/sources.list.d/ee-repo.list
+                echo -e "deb http://ftp.byfly.by/pub/opensuse/repositories/home:/rtCamp:/EasyEngine/Debian_7.0/ /" >> /etc/apt/sources.list.d/ee-repo.list
                 gpg --keyserver "hkp://pgp.mit.edu" --recv-keys '3050AC3CD2AE6F03'
                 gpg -a --export --armor '3050AC3CD2AE6F03' | apt-key add -
                 if [ -f /etc/nginx/conf.d/ee-nginx.conf ]; then
@@ -530,11 +530,11 @@ if [ -f /etc/ImageMagick/policy.xml  ]
             fi
         elif [ "$ee_distro_version" == "jessie" ]; then
 
-            grep -Hr 'http://download.opensuse.org/repositories/home:/rtCamp:/EasyEngine/Debian_8.0/ /' /etc/apt/sources.list.d/ &>> /dev/null
+            grep -Hr 'http://ftp.byfly.by/pub/opensuse/repositories/home:/rtCamp:/EasyEngine/Debian_8.0/ /' /etc/apt/sources.list.d/ &>> /dev/null
             #grep -Hr "deb http://packages.dotdeb.org jessie all" /etc/apt/sources.list.d/ee-repo.list &>> /dev/null
             if [[ $? -ne 0 ]]; then
                 #sed -i "/deb http:\/\/packages.dotdeb.org jessie all/d" /etc/apt/sources.list.d/ee-repo.list &>> /dev/null
-                echo -e "deb http://download.opensuse.org/repositories/home:/rtCamp:/EasyEngine/Debian_8.0/ /" >> /etc/apt/sources.list.d/ee-repo.list
+                echo -e "deb http://ftp.byfly.by/pub/opensuse/repositories/home:/rtCamp:/EasyEngine/Debian_8.0/ /" >> /etc/apt/sources.list.d/ee-repo.list
                 gpg --keyserver "hkp://pgp.mit.edu" --recv-keys '3050AC3CD2AE6F03'
                 gpg -a --export --armor '3050AC3CD2AE6F03' | apt-key add -
                 if [ -f /etc/nginx/conf.d/ee-nginx.conf ]; then
